@@ -74,10 +74,11 @@ def main(config):
         close_rabbitmq_connection
     ])
 
-    web.run_app(app)
+    web.run_app(app, host=config.app_host, port=config.app_port)
 
 
 class Config:
+    app_host = 'localhost'
     app_port = 8080
     rabbitmq_host = 'localhost'
     rabbitmq_port = 5672
@@ -109,7 +110,8 @@ if __name__ == '__main__':
     logger.info('info starting...')
 
     config = Config()
-    config.app_port = parser.getint('app', 'port')
+    config.app_host = parser.get('app', 'host', fallback='localhost')
+    config.app_port = parser.getint('app', 'port', fallback=8080)
     config.rabbitmq_host = parser.get('rabbitmq', 'host')
     config.rabbitmq_port = parser.getint('rabbitmq', 'port')
     config.rabbitmq_username = parser.get('rabbitmq', 'username')
