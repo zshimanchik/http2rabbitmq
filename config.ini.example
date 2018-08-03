@@ -9,4 +9,3 @@ port=5672
 username=guest
 password=guest
 request_queue=requests
-response_queue=responses
