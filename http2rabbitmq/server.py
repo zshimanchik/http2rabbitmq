@@ -23,7 +23,7 @@ async def handle(request):
                 'answer_queue': answer_queue.name,
             }).encode()
         ),
-        routing_key='hello'
+        routing_key=config.rabbitmq_request_queue
     )
     retry = 0
     answer = await answer_queue.get(timeout=5, fail=False)
@@ -37,16 +37,16 @@ async def handle(request):
         body = answer.body
     else:
         logger.debug('no answer received from rabbitmq')
-        body = '{"response": ""}'
+        body = '{"response": "{}"}'
     data = json.loads(body)
-    return web.Response(text=data['response'])
+    return web.Response(text=data['response'], headers={'Content-Type':'text/json'})
 
 
 async def connect_rabbitmq(loop, username, password, host):
     logger.debug(host)
     connection = await aio_pika.connect_robust(f"amqp://{username}:{password}@{host}/", loop=loop)
     channel = await connection.channel()
-    await channel.declare_queue('hello')
+    await channel.declare_queue(config.rabbitmq_request_queue)
     return channel
 
 
@@ -84,6 +84,7 @@ class Config:
     rabbitmq_port = 5672
     rabbitmq_username = 'guest'
     rabbitmq_password = 'guest'
+    rabbitmq_request_queue = 'requests'
 
 
 if __name__ == '__main__':
