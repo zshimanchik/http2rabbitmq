@@ -2,7 +2,7 @@ version: '2.1'
 services:
   rabbitmq:
     image: "rabbitmq:3.6.10"
-    restart: 'no'
+    restart: 'always'
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
@@ -10,7 +10,7 @@ services:
       - 5672:5672
   server:
     build: .
-    restart: 'no'
+    restart: 'always'
     depends_on:
       - rabbitmq
     ports:
